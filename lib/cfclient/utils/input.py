@@ -90,6 +90,7 @@ class JoystickReader:
         self._old_thrust = 0
         self._old_raw_thrust = 0
         self._old_alt_hold = False
+        self._old_autoland = False
         self._springy_throttle = True
 
         self._prev_values = {}
@@ -137,7 +138,7 @@ class JoystickReader:
         self._read_timer = PeriodicTimer(0.01, self.read_input)
 
         if do_device_discovery:
-            self._discovery_timer = PeriodicTimer(1.0, 
+            self._discovery_timer = PeriodicTimer(1.0,
                             self._do_device_discovery)
             self._discovery_timer.start()
 
@@ -162,6 +163,7 @@ class JoystickReader:
         self.device_discovery = Caller()
         self.device_error = Caller()
         self.althold_updated = Caller()
+        self.autoland_updated = Caller()
         self.alt1_updated = Caller()
         self.alt2_updated = Caller()
 
@@ -175,6 +177,14 @@ class JoystickReader:
     def enable_alt_hold(self, althold):
         """Enable or disable altitude hold"""
         self._old_alt_hold = althold
+
+    def set_autoland_available(self, available):
+        """Set if auto-land is available or not (depending on HW)"""
+        self._has_pressure_sensor = available
+
+    def enable_autoland(self, autoland):
+        """Enable or disable auto-land"""
+        self._old_autoland = autoland
 
     def _do_device_discovery(self):
         devs = self.available_devices()
@@ -212,12 +222,12 @@ class JoystickReader:
         approved_devs = []
 
         for dev in devs:
-            if ((not self._dev_blacklist) or 
+            if ((not self._dev_blacklist) or
                     (self._dev_blacklist and not
                      self._dev_blacklist.match(dev.name))):
                 approved_devs.append(dev)
 
-        return approved_devs 
+        return approved_devs
 
     def enableRawReading(self, device_name):
         """

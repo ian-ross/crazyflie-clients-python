@@ -69,11 +69,9 @@ class NoMux(InputMux):
 
 
         self._update_alt_hold(data["althold"])
+        self._update_autoland(data["autoland"])
         self._update_em_stop(data["estop"])
         self._update_alt1(data["alt1"])
         self._update_alt2(data["alt2"])
 
         return [roll, pitch, yaw, thrust]
-
-
-

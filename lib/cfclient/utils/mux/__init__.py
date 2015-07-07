@@ -92,6 +92,7 @@ class InputMux(object):
         #self.device_discovery = Caller()
         #self.device_error = Caller()
         #self.althold_updated = Caller()
+        #self.autoland_updated = Caller()
         #self.alt1_updated = Caller()
         #self.alt2_updated = Caller()
 
@@ -181,6 +182,10 @@ class InputMux(object):
         """Enable or disable altitude hold"""
         self._old_alt_hold = althold
 
+    def enable_autoland(self, autoland):
+        """Enable or disable auto-land"""
+        self._old_autoland = autoland
+
     def _check_toggle(self, key, data):
         if not key in self._prev_values:
             self._prev_values[key] = data
@@ -192,6 +197,10 @@ class InputMux(object):
     def _update_alt_hold(self, value):
         if self._check_toggle("althold", value):
             self.input.althold_updated.call(str(value))
+
+    def _update_autoland(self, value):
+        if self._check_toggle("autoland", value):
+            self.input.autoland_updated.call(str(value))
 
     def _update_em_stop(self, value):
         if self._check_toggle("estop", value):

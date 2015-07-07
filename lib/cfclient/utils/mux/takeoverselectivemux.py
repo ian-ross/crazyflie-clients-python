@@ -49,7 +49,8 @@ class TakeOverSelectiveMux(InputMux):
         logger.info("Adding device {} to {}".format(dev.name, self.name))
         logger.info("Device has mapping {}".format(dev.input_map_name))
         if len(self._devs) == 0:
-            parameters = ("thrust", "yaw", "estop", "alt1", "alt2", "althold", "exit")
+            parameters = ("thrust", "yaw", "estop",
+                          "alt1", "alt2", "althold", "autoland", "exit")
         else:
             parameters = ("roll", "pitch")
         self._devs.append((dev, parameters))
@@ -87,6 +88,7 @@ class TakeOverSelectiveMux(InputMux):
             [roll, pitch] = self._scale_rp(data["roll"], data["pitch"])
             [roll, pitch] = self._trim_rp(roll, pitch)
             self._update_alt_hold(data["althold"])
+            self._update_autoland(data["autoland"])
             self._update_em_stop(data["estop"])
             self._update_alt1(data["alt2"])
             #self._update_alt2(data["alt2"])

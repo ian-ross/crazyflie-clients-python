@@ -70,7 +70,7 @@ class InputConfigDialogue(QtGui.QWidget, inputconfig_widget_class):
 
         self.cancelButton.clicked.connect(self.close)
         self.saveButton.clicked.connect(self._save_config)
-        
+
         self.detectPitch.clicked.connect(lambda : self._axis_detect("pitch", "Pitch axis",
                                                  "Center the pitch axis then do max %s pitch", ["forward", "backward"]))
         self.detectRoll.clicked.connect(lambda : self._axis_detect("roll", "Roll axis",
@@ -96,7 +96,9 @@ class InputConfigDialogue(QtGui.QWidget, inputconfig_widget_class):
         self.detectExitapp.clicked.connect(lambda : self._button_detect("exitapp", "Exit application",
                                                     "Press the button for the exiting the application"))
         self.detectAltHold.clicked.connect(lambda : self._button_detect("althold", "Altitude hold",
-                                                    "Press the button for altitude hold mode activation (releasing returns to manual mode)"))        
+                                                    "Press the button for altitude hold mode activation (releasing returns to manual mode)"))
+        self.detectAutoland.clicked.connect(lambda : self._button_detect("autoland", "Auto-land",
+                                                     "Press the button for auto-land mode activation (releasing returns to manual mode)"))
 
         self.configButton.clicked.connect(self._start_configuration)
         self.loadButton.clicked.connect(self._load_config_from_file)
@@ -109,7 +111,8 @@ class InputConfigDialogue(QtGui.QWidget, inputconfig_widget_class):
                               self.detectPitchPos, self.detectPitchNeg,
                               self.detectRollPos, self.detectRollNeg,
                               self.detectKillswitch, self.detectExitapp,
-                              self.detectAltHold, self.detectAlt1, self.detectAlt2]
+                              self.detectAltHold, self.detectAutoland,
+                              self.detectAlt1, self.detectAlt2]
 
         self._button_to_detect = ""
         self._axis_to_detect = ""
@@ -143,6 +146,7 @@ class InputConfigDialogue(QtGui.QWidget, inputconfig_widget_class):
             "alt2": self.alt2,
             "exitapp": self.exitapp,
             "althold": self.althold,
+            "autoland": self.autoland,
             }
 
         self._axisindicators = {

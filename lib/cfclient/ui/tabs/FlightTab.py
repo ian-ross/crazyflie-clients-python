@@ -108,9 +108,11 @@ class FlightTab(Tab, flight_tab_class):
         self._emergency_stop_updated_signal.connect(self.updateEmergencyStop)
         self.helper.inputDeviceReader.emergency_stop_updated.add_callback(
                                      self._emergency_stop_updated_signal.emit)
-        
+
         self.helper.inputDeviceReader.althold_updated.add_callback(
                     lambda enabled: self.helper.cf.param.set_value("flightmode.althold", enabled))
+        self.helper.inputDeviceReader.autoland_updated.add_callback(
+                    lambda enabled: self.helper.cf.param.set_value("flightmode.autoland", enabled))
 
         self._imu_data_signal.connect(self._imu_data_received)
         self._baro_data_signal.connect(self._baro_data_received)
@@ -176,6 +178,11 @@ class FlightTab(Tab, flight_tab_class):
                     group="flightmode", name="althold",
                     cb=(lambda name, enabled:
                     self.helper.inputDeviceReader.enable_alt_hold(eval(enabled))))
+
+        self.helper.cf.param.add_update_callback(
+                    group="flightmode", name="autoland",
+                    cb=(lambda name, enabled:
+                    self.helper.inputDeviceReader.enable_autoland(eval(enabled))))
 
         self._ledring_nbr_effects = 0
 
@@ -248,25 +255,25 @@ class FlightTab(Tab, flight_tab_class):
             self.actualM2.setValue(data["motor.m2"])
             self.actualM3.setValue(data["motor.m3"])
             self.actualM4.setValue(data["motor.m4"])
-        
+
     def _baro_data_received(self, timestamp, data, logconf):
         if self.isVisible():
             self.actualASL.setText(("%.2f" % data["baro.aslLong"]))
             self.ai.setBaro(data["baro.aslLong"])
-        
+
     def _althold_data_received(self, timestamp, data, logconf):
         if self.isVisible():
             target = data["altHold.target"]
             if target>0:
                 if not self.targetASL.isEnabled():
-                    self.targetASL.setEnabled(True) 
+                    self.targetASL.setEnabled(True)
                 self.targetASL.setText(("%.2f" % target))
-                self.ai.setHover(target)    
+                self.ai.setHover(target)
             elif self.targetASL.isEnabled():
                 self.targetASL.setEnabled(False)
-                self.targetASL.setText("Not set")   
-                self.ai.setHover(0)    
-        
+                self.targetASL.setText("Not set")
+                self.ai.setHover(0)
+
     def _imu_data_received(self, timestamp, data, logconf):
         if self.isVisible():
             self.actualRoll.setText(("%.2f" % data["stabilizer.roll"]))
@@ -275,7 +282,7 @@ class FlightTab(Tab, flight_tab_class):
             self.actualThrust.setText("%.2f%%" %
                                       self.thrustToPercentage(
                                                       data["stabilizer.thrust"]))
-    
+
             self.ai.setRollPitch(-data["stabilizer.roll"],
                                  data["stabilizer.pitch"])
 

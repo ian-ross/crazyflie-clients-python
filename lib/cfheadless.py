@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#     ||          ____  _ __                           
-#  +------+      / __ )(_) /_______________ _____  ___ 
+#     ||          ____  _ __
+#  +------+      / __ )(_) /_______________ _____  ___
 #  | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
 #  +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
 #   ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
@@ -14,7 +14,7 @@
 #  modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation; either version 2
 #  of the License, or (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -46,7 +46,7 @@ if os.name == 'posix':
     os.dup2(os.open('/dev/null', os.O_WRONLY), 1)
     sys.stdout = os.fdopen(stdout, 'w')
 
-# set SDL to use the dummy NULL video driver, 
+# set SDL to use the dummy NULL video driver,
 #   so it doesn't need a windowing system.
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
@@ -62,7 +62,7 @@ class HeadlessClient():
         self._cf = Crazyflie(ro_cache=sys.path[0]+"/cflib/cache",
                              rw_cache=sys.path[1]+"/cache")
 
-        signal.signal(signal.SIGINT, signal.SIG_DFL) 
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._devs = []
 
@@ -70,7 +70,7 @@ class HeadlessClient():
             self._devs.append(d.name)
 
     def setup_controller(self, input_config, input_device=0, xmode=False):
-        """Set up the device reader""" 
+        """Set up the device reader"""
         # Set up the joystick reader
         self._jr.device_error.add_callback(self._input_dev_error)
         print "Client side X-mode: %s" % xmode
@@ -105,6 +105,8 @@ class HeadlessClient():
                     self._jr.set_alt_hold_available(eval(found))))
         self._jr.althold_updated.add_callback(
                 lambda enabled: self._cf.param.set_value("flightmode.althold", enabled))
+        self._jr.autoland_updated.add_callback(
+                lambda enabled: self._cf.param.set_value("flightmode.autoland", enabled))
 
         self._cf.open_link(link_uri)
         self._jr.input_updated.add_callback(self._cf.commander.send_setpoint)
@@ -153,9 +155,9 @@ def main():
     parser.add_argument("--controllers", action="store_true",
                         dest="list_controllers",
                         help="Only display available controllers and exit")
-    parser.add_argument("-x", "--x-mode", action="store_true", 
-                        dest="xmode", 
-                        help="Enable client-side X-mode") 
+    parser.add_argument("-x", "--x-mode", action="store_true",
+                        dest="xmode",
+                        help="Enable client-side X-mode")
     (args, unused) = parser.parse_known_args()
 
     if args.debug:
@@ -175,4 +177,3 @@ def main():
             headless.connect_crazyflie(link_uri=args.uri)
         else:
             print "No input-device connected, exiting!"
-

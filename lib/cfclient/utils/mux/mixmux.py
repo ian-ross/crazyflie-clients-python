@@ -76,6 +76,7 @@ class MixMux(InputMux):
             [roll, pitch] = self._scale_rp(data["roll"], data["pitch"])
             [roll, pitch] = self._trim_rp(roll, pitch)
             self._update_alt_hold(data["althold"])
+            self._update_autoland(data["autoland"])
             self._update_em_stop(data["estop"])
             self._update_alt1(data["alt1"])
             self._update_alt2(data["alt2"])
